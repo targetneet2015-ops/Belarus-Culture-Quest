@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture Quest: Belarus's Hidden Heritage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Earth & Forest
+         Background: Warm Neutral (Beige/Cream) #FDFBF7
+         Primary Text: Dark Charcoal #1F2937
+         Accents: Forest Green #3F6212, Cornflower Blue #60A5FA (Blue-Eyed Land), Fire Orange #EA580C (Kupalle)
+    -->
+
+    <!-- Application Structure Plan: 
+         The app is designed as a "Cultural Journey" rather than a linear report.
+         1. Hero Section: Sets the mood ("Blue-Eyed Land").
+         2. Context Dashboard: Visualizes 'Why Belarus?' and 'Tourist Motivations' using charts to ground the user in the data.
+         3. The Three Gems (Core Interactive Section): A tabbed 'Explorer' allows users to dive deep into each tradition (Kupalle, Foraging, Straw) without scrolling, facilitating comparison and focused learning.
+         4. The Experience Itinerary: A vertical timeline showing how these traditions translate into a real tourism product.
+         5. Responsible Impact: A grid of interactive cards explaining the ethical framework.
+         This structure moves from "Context" -> "Content" -> "Application" -> "Ethics".
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Forest Cover (Chart.js Doughnut): Goal: Inform. visualizes the 43% stat immediately to justify the foraging culture.
+         2. Tourist Motivations (Chart.js Radar): Goal: Compare. Shows how 'Culture Quest' targets different needs (Authenticity) vs. standard tourism.
+         3. Kupalle Ritual Flow (HTML/JS Steps): Goal: Change/Process. Users click through the night's phases (Flame Jumping -> Fern Flower) to understand the narrative arc.
+         4. Foraging Calendar (Interactive Grid): Goal: Organize. Click a season to see specific mushrooms/berries, reinforcing the "Seasonal Life" concept.
+         5. Straw Artifacts (JS Flip Cards): Goal: Inform. Click an item (Spider, Star) to reveal its spiritual meaning.
+         * CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All icons are Unicode or CSS shapes.
+    -->
+
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #FDFBF7; /* Warm neutral */
+            color: #1F2937;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Chart Container Styling - Mandatory Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Constrain width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Utilities */
+        .tab-active {
+            border-bottom: 3px solid #3F6212;
+            color: #3F6212;
+            font-weight: 700;
+        }
+        .tab-inactive {
+            color: #6B7280;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-inactive:hover {
+            color: #3F6212;
+            opacity: 0.7;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .interactive-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .interactive-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- HERO SECTION -->
+    <header class="relative bg-[#3F6212] text-[#FDFBF7] py-20 px-4 text-center overflow-hidden">
+        <div class="absolute inset-0 opacity-10 pattern-dots"></div> <!-- CSS Pattern placeholder -->
+        <div class="max-w-4xl mx-auto relative z-10 fade-in">
+            <p class="text-sm tracking-[0.2em] uppercase mb-4 text-[#FDFBF7]/80">Presenting</p>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">Culture Quest: Belarus</h1>
+            <p class="text-xl md:text-2xl font-light italic opacity-90 mb-8">"Beyond the Map: Discovering the Soul of the Blue-Eyed Land"</p>
+            <p class="max-w-2xl mx-auto text-lg leading-relaxed opacity-80 mb-10">
+                A journey into lesser-known cultural practices—from pagan midsummer fires to the silent art of foraging—revealing a nation shaped by Slavic roots and enduring rural traditions.
+            </p>
+            <button onclick="document.getElementById('dashboard').scrollIntoView({behavior: 'smooth'})" class="bg-[#EA580C] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#c2410c] transition-colors shadow-lg flex items-center gap-2 mx-auto">
+                Start the Journey <span>↓</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- DASHBOARD: Context & Data -->
+    <section id="dashboard" class="py-16 px-4 max-w-7xl mx-auto">
+        <div class="mb-12 text-center max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-[#3F6212] mb-4">Why Belarus?</h2>
+            <p class="text-gray-600">
+                Before diving into the traditions, it's essential to understand the landscape. Belarus is a "Crossroads of Civilisations" with a unique layered identity. Here, we analyze the motivations for exploring this hidden gem and the geography that shapes its culture.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+            <!-- Chart 1: The Landscape -->
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-[#60A5FA]">
+                <h3 class="text-xl font-bold mb-2">The "Blue-Eyed Land"</h3>
+                <p class="text-sm text-gray-500 mb-6">The physical environment dictates the culture. With massive forest coverage and over 10,000 lakes, nature is not just scenery; it's a way of life.</p>
+                
+                <div class="chart-container">
+                    <canvas id="forestChart"></canvas>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <span class="block text-2xl font-bold text-blue-600">10k+</span>
+                        <span class="text-xs text-gray-600 uppercase">Lakes</span>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <span class="block text-2xl font-bold text-green-600">43%</span>
+                        <span class="text-xs text-gray-600 uppercase">Forest Cover</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 2: Tourist Motivations -->
+            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-[#EA580C]">
+                <h3 class="text-xl font-bold mb-2">Tourist Motivations</h3>
+                <p class="text-sm text-gray-500 mb-6">Why would a traveler choose this experience? Our analysis shows a drive for "Authenticity" and "Meaning" over standard sightseeing.</p>
+                
+                <div class="chart-container">
+                    <canvas id="motivationChart"></canvas>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-sm italic text-gray-600">"Tourists rarely experience authentic pagan traditions. This is not a staged show."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN INTERACTIVE: The Three Hidden Gems -->
+    <section id="gems" class="bg-white py-16 px-4 border-y border-gray-200">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-[#EA580C] font-bold tracking-widest uppercase text-sm">The Core Experience</span>
+                <h2 class="text-4xl font-bold text-[#1F2937] mt-2">Three Living Traditions</h2>
+                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">
+                    Interact with the tabs below to explore the three pillars of our "Living Heritage" tour. Each represents a different facet of the Belarusian soul: The Spirit (Kupalle), The Land (Foraging), and The Home (Straw).
+                </p>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex flex-wrap justify-center border-b border-gray-200 mb-8 sticky top-0 bg-white z-20 pt-4">
+                <button onclick="switchTab('kupalle')" id="tab-kupalle" class="tab-active px-6 py-4 text-lg transition-colors focus:outline-none flex items-center gap-2">
+                    <span class="text-2xl">🔥</span> Kupalle Rites
+                </button>
+                <button onclick="switchTab('foraging')" id="tab-foraging" class="tab-inactive px-6 py-4 text-lg transition-colors focus:outline-none flex items-center gap-2">
+                    <span class="text-2xl">🍄</span> Forest Foraging
+                </button>
+                <button onclick="switchTab('straw')" id="tab-straw" class="tab-inactive px-6 py-4 text-lg transition-colors focus:outline-none flex items-center gap-2">
+                    <span class="text-2xl">🌾</span> Straw Weaving
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="content-area" class="min-h-[500px]">
+                
+                <!-- 1. KUPALLE CONTENT -->
+                <div id="view-kupalle" class="fade-in block">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h3 class="text-3xl font-bold text-[#EA580C] mb-4">Ancient Pagan Rites Alive & Well</h3>
+                            <p class="text-gray-700 leading-relaxed mb-6">
+                                A midsummer celebration first recorded in the 12th century, Kupalle connects participants with nature, fertility, and purification. Unlike staged shows, this is practiced authentically in villages across Hrodna and Polatsk.
+                            </p>
+                            
+                            <!-- Interactive Ritual Steps -->
+                            <div class="space-y-4">
+                                <div class="p-4 border-l-4 border-[#EA580C] bg-orange-50 cursor-pointer hover:bg-orange-100 transition-colors" onclick="highlightRitual(1)">
+                                    <h4 class="font-bold text-lg flex justify-between items-center">1. Flame Jumping <span class="text-2xl">🔥</span></h4>
+                                    <p id="ritual-desc-1" class="text-sm text-gray-600 mt-2">Couples leap over bonfires holding hands. If they land without letting go, their bond is unbreakable.</p>
+                                </div>
+                                <div class="p-4 border-l-4 border-gray-300 bg-gray-50 cursor-pointer hover:bg-green-50 transition-colors" onclick="highlightRitual(2)">
+                                    <h4 class="font-bold text-lg flex justify-between items-center">2. The Fern Flower Search <span class="text-2xl">🌿</span></h4>
+                                    <p id="ritual-desc-2" class="text-sm text-gray-600 mt-2 hidden">A magical flower that blooms for only a moment. Finding it grants wisdom and great fortune.</p>
+                                </div>
+                                <div class="p-4 border-l-4 border-gray-300 bg-gray-50 cursor-pointer hover:bg-blue-50 transition-colors" onclick="highlightRitual(3)">
+                                    <h4 class="font-bold text-lg flex justify-between items-center">3. Wreath Floating <span class="text-2xl">🌊</span></h4>
+                                    <p id="ritual-desc-3" class="text-sm text-gray-600 mt-2 hidden">Young women set wildflower wreaths afloat on rivers. The direction predicts their future marriage.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Visual Representation (Canvas) -->
+                        <div class="bg-[#1a1a1a] rounded-xl p-8 text-center relative overflow-hidden h-96 flex flex-col justify-center items-center shadow-2xl">
+                            <div id="kupalle-visual-text" class="text-white relative z-10">
+                                <div class="text-6xl mb-4 animate-pulse">🔥</div>
+                                <h3 class="text-2xl font-serif text-[#EA580C]">The Fire Cleanses</h3>
+                                <p class="text-gray-400 mt-2 text-sm max-w-xs mx-auto">Click the steps on the left to see the ritual unfold.</p>
+                            </div>
+                            <!-- Simple particles effect placeholder via CSS -->
+                            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#EA580C 1px, transparent 1px); background-size: 20px 20px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FORAGING CONTENT -->
+                <div id="view-foraging" class="hidden fade-in">
+                    <div class="text-center mb-8">
+                        <h3 class="text-3xl font-bold text-[#3F6212] mb-2">Foraging: A Way of Life</h3>
+                        <p class="text-gray-600 italic">"Who doesn't know the forest, doesn't know home."</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Controls -->
+                        <div class="col-span-1 bg-green-50 p-6 rounded-xl border border-green-100">
+                            <h4 class="font-bold text-lg mb-4 text-[#3F6212]">Seasonal Calendar</h4>
+                            <p class="text-sm text-gray-600 mb-6">Select a month to see what the locals are harvesting in the Białowieża Forest.</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="updateForaging('June')" class="bg-white hover:bg-green-200 py-2 px-3 rounded border border-green-200 text-sm font-semibold transition-colors focus:ring-2 focus:ring-green-500">June</button>
+                                <button onclick="updateForaging('July')" class="bg-white hover:bg-green-200 py-2 px-3 rounded border border-green-200 text-sm font-semibold transition-colors focus:ring-2 focus:ring-green-500">July</button>
+                                <button onclick="updateForaging('September')" class="bg-white hover:bg-green-200 py-2 px-3 rounded border border-green-200 text-sm font-semibold transition-colors focus:ring-2 focus:ring-green-500">September</button>
+                                <button onclick="updateForaging('October')" class="bg-white hover:bg-green-200 py-2 px-3 rounded border border-green-200 text-sm font-semibold transition-colors focus:ring-2 focus:ring-green-500">October</button>
+                            </div>
+                        </div>
+
+                        <!-- Display -->
+                        <div class="col-span-1 md:col-span-2 bg-white border-2 border-[#3F6212] rounded-xl p-8 flex flex-col justify-center items-center relative overflow-hidden">
+                            <div id="forage-icon" class="text-8xl mb-4 transition-transform duration-500 transform hover:scale-110">🍄</div>
+                            <h3 id="forage-title" class="text-3xl font-bold text-gray-800">September Harvest</h3>
+                            <p id="forage-desc" class="text-center text-gray-600 mt-4 max-w-md">
+                                The prime season for **Boletes**. Families head into the woods to collect these prized mushrooms. In villages like Vitebsk, you will see them strung on thread and hung above clay stoves to dry.
+                            </p>
+                            <div class="absolute bottom-4 right-4 text-xs text-gray-400 uppercase tracking-wider">UNESCO World Heritage Site</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. STRAW CONTENT -->
+                <div id="view-straw" class="hidden fade-in">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-3xl font-bold text-[#D4A017] mb-4">Straw: Guardian of the Home</h3>
+                            <p class="text-gray-700 leading-relaxed mb-6">
+                                *Solomopletsenne* (straw weaving) is on the UNESCO Intangible Heritage Watchlist. More than just a craft, straw is considered the "spirit of the harvest."
+                            </p>
+                            <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                                <h4 class="font-bold mb-2">Did you know?</h4>
+                                <p class="text-sm">Artisans often begin training with their grandmothers as young as seven or eight. It transforms a humble material into a sacred charm.</p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Gallery -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div onclick="showStrawDetail('pavuk')" class="interactive-card bg-white p-6 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
+                                <div class="text-4xl mb-2">🕷️</div>
+                                <h4 class="font-bold">Pavuk</h4>
+                                <span class="text-xs text-gray-400">Click to reveal</span>
+                            </div>
+                            <div onclick="showStrawDetail('zhayavka')" class="interactive-card bg-white p-6 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
+                                <div class="text-4xl mb-2">🌾</div>
+                                <h4 class="font-bold">Zhayavka</h4>
+                                <span class="text-xs text-gray-400">Click to reveal</span>
+                            </div>
+                            <div onclick="showStrawDetail('kaliada')" class="interactive-card bg-white p-6 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
+                                <div class="text-4xl mb-2">⭐</div>
+                                <h4 class="font-bold">Kaliada Star</h4>
+                                <span class="text-xs text-gray-400">Click to reveal</span>
+                            </div>
+                            <div onclick="showStrawDetail('craft')" class="interactive-card bg-white p-6 rounded-xl shadow border border-gray-100 flex flex-col items-center text-center">
+                                <div class="text-4xl mb-2">👐</div>
+                                <h4 class="font-bold">The Craft</h4>
+                                <span class="text-xs text-gray-400">Click to reveal</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Dynamic Description Box -->
+                    <div id="straw-detail-box" class="mt-8 p-6 bg-[#1F2937] text-white rounded-xl hidden">
+                        <h4 id="straw-detail-title" class="text-xl font-bold text-[#D4A017] mb-2">Pavuk (Spider Ornament)</h4>
+                        <p id="straw-detail-text">Complex, geometric shapes traditionally hung above the dining table. They act as a "guardian of the home," catching bad energy in their webs.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ITINERARY SECTION -->
+    <section class="py-16 px-4 bg-[#F3F4F6]">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-3xl font-bold text-center text-[#1F2937] mb-12">The "Living Heritage" Experience Package</h2>
+            
+            <div class="relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-1 bg-gray-300"></div>
+
+                <!-- Day 1 -->
+                <div class="relative z-10 mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="order-1 bg-white p-6 rounded-lg shadow-md w-full md:w-5/12 ml-12 md:ml-0 md:mr-auto text-right">
+                        <h3 class="font-bold text-xl text-[#3F6212]">Day 1: Village Immersion</h3>
+                        <p class="text-sm text-gray-600 mt-2">Arrival in a traditional homestead. Introduction to host families. Evening storytelling session about local myths.</p>
+                    </div>
+                    <div class="order-2 absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-[#3F6212] rounded-full border-4 border-white"></div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="relative z-10 mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="order-1 bg-white p-6 rounded-lg shadow-md w-full md:w-5/12 ml-12 md:ml-auto md:text-left">
+                        <h3 class="font-bold text-xl text-[#D4A017]">Day 2: Craft & Forest</h3>
+                        <p class="text-sm text-gray-600 mt-2">Morning foraging walk with a local guide (seasonal harvesting). Afternoon *Solomopletsenne* (Straw Weaving) masterclass at Dudutki.</p>
+                    </div>
+                    <div class="order-2 absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-[#D4A017] rounded-full border-4 border-white"></div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="relative z-10 mb-12 flex flex-col md:flex-row items-center w-full">
+                    <div class="order-1 bg-white p-6 rounded-lg shadow-md w-full md:w-5/12 ml-12 md:ml-0 md:mr-auto text-right">
+                        <h3 class="font-bold text-xl text-[#EA580C]">Day 3: The Kupalle Night</h3>
+                        <p class="text-sm text-gray-600 mt-2">Preparation for the evening ritual. Wreath making. Bonfire lighting at sunset. Flame jumping and traditional songs until dawn.</p>
+                    </div>
+                    <div class="order-2 absolute left-4 md:left-1/2 transform -translate-x-1/2 w-8 h-8 bg-[#EA580C] rounded-full border-4 border-white"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESPONSIBLE TOURISM / IMPACT -->
+    <section class="py-16 px-4 max-w-7xl mx-auto">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-[#1F2937] mb-4">Sustainable Journey</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                We don't just visit; we sustain. Our model ensures economic benefits stay local and traditions are respected, not exploited.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 hover:border-[#3F6212] transition-colors group">
+                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🤝</div>
+                <h4 class="font-bold text-lg mb-2">Community Empowerment</h4>
+                <p class="text-sm text-gray-600">Proceeds fund village craft schools. Rituals are led by elders, ensuring authority remains with the community.</p>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 hover:border-[#3F6212] transition-colors group">
+                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🌲</div>
+                <h4 class="font-bold text-lg mb-2">Natural Harmony</h4>
+                <p class="text-sm text-gray-600">Foraging is limited to approved zones. Ecology briefings safeguard the 10,000+ lakes and forests.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 hover:border-[#3F6212] transition-colors group">
+                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🛐</div>
+                <h4 class="font-bold text-lg mb-2">Respecting Sacred</h4>
+                <p class="text-sm text-gray-600">Strict etiquette: No touching sacred fires. Consent required for filming. Folklore is treated as spiritual, not entertainment.</p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white p-6 rounded-xl border border-gray-200 hover:border-[#3F6212] transition-colors group">
+                <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</div>
+                <h4 class="font-bold text-lg mb-2">Future Legacy</h4>
+                <p class="text-sm text-gray-600">We address cross-cultural challenges through education, turning potential taboos into learning moments.</p>
+            </div>
+        </div>
+
+        <div class="mt-12 bg-gray-100 rounded-xl p-8">
+            <h3 class="text-xl font-bold mb-4 text-center">Cross-Cultural Challenges & Solutions</h3>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="challengeChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#1F2937] text-white py-12 text-center">
+        <h2 class="font-serif text-2xl mb-4">Belarus: A Living Heritage</h2>
+        <p class="text-gray-400 text-sm max-w-md mx-auto mb-8">
+            "Belarus is not just a destination; it is a living heritage waiting to be experienced responsibly."
+        </p>
+        <div class="border-t border-gray-700 pt-8 text-xs text-gray-500 uppercase tracking-widest">
+            Created by Group-7 <br>
+            Harshitha | Sangam | Ariyan | Anshuman | Alister | Vignesh
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- 1. STATE MANAGEMENT ---
+        const appState = {
+            currentTab: 'kupalle',
+            currentForageMonth: 'September',
+            strawDetail: null
+        };
+
+        const forageData = {
+            'June': {
+                title: 'Early Summer Harvest',
+                desc: 'The season for **Chanterelles**. The bright yellow mushrooms begin to populate the forest floor. Villagers also collect wild strawberries.',
+                icon: '🍓'
+            },
+            'July': {
+                title: 'High Summer Bounty',
+                desc: 'The forests are full of **Blueberries** and **Raspberries**. Medicinal herbs are at their most potent and are gathered for tea mixtures.',
+                icon: '🫐'
+            },
+            'September': {
+                title: 'The Mushroom King',
+                desc: 'The prime season for **Boletes** (Porcini). Families head into the woods to collect these prized mushrooms. In villages, you will see them strung on thread to dry.',
+                icon: '🍄'
+            },
+            'October': {
+                title: 'Late Harvest',
+                desc: 'Cranberries in the boglands. Late mushrooms are gathered before the first frosts. The focus shifts to preserving the harvest for winter.',
+                icon: '🍂'
+            }
+        };
+
+        const strawData = {
+            'pavuk': {
+                title: 'Pavuk (Spider Ornament)',
+                text: 'These complex, geometric shapes are traditionally hung above the dining table. They act as a "guardian of the home," believed to catch negative energy in their webs like a filter.'
+            },
+            'zhayavka': {
+                title: 'Zhayavka',
+                text: 'Woven symbols created specifically to celebrate the harvest and give thanks for its bounty. They represent the connection between the earth\'s yield and the family\'s survival.'
+            },
+            'kaliada': {
+                title: 'Kaliada Stars',
+                text: 'Ornate stars used as decorations during the winter solstice celebrations. They are carried by carolers and represent the return of the sun.'
+            },
+            'craft': {
+                title: 'The Craft of Solomopletsenne',
+                text: 'On the UNESCO Intangible Heritage Watchlist. It transforms simple straw into objects of profound spiritual importance, linking the earth, family, and spirit world.'
+            }
+        };
+
+        // --- 2. TAB SWITCHING LOGIC ---
+        function switchTab(tabId) {
+            // Update State
+            appState.currentTab = tabId;
+
+            // Hide all views
+            ['kupalle', 'foraging', 'straw'].forEach(id => {
+                document.getElementById(`view-${id}`).classList.add('hidden');
+                document.getElementById(`tab-${id}`).classList.remove('tab-active');
+                document.getElementById(`tab-${id}`).classList.add('tab-inactive');
+            });
+
+            // Show selected view
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('tab-active');
+            document.getElementById(`tab-${tabId}`).classList.remove('tab-inactive');
+        }
+
+        // --- 3. KUPALLE RITUAL LOGIC ---
+        function highlightRitual(step) {
+            // Reset styles
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`ritual-desc-${i}`).classList.add('hidden');
+            }
+            
+            // Activate selected
+            document.getElementById(`ritual-desc-${step}`).classList.remove('hidden');
+
+            // Update Visual
+            const visuals = {
+                1: { emoji: '🔥', title: 'Flame Jumping', text: 'A test of unbreakable bonds.' },
+                2: { emoji: '🌿', title: 'Fern Flower', text: 'A mythical search for wisdom.' },
+                3: { emoji: '🌊', title: 'Wreath Floating', text: 'Divining the future on the water.' }
+            };
+
+            const v = visuals[step];
+            const visualContainer = document.getElementById('kupalle-visual-text');
+            
+            // Simple animation effect
+            visualContainer.style.opacity = 0;
+            setTimeout(() => {
+                visualContainer.innerHTML = `
+                    <div class="text-6xl mb-4 animate-bounce">${v.emoji}</div>
+                    <h3 class="text-2xl font-serif text-[#EA580C]">${v.title}</h3>
+                    <p class="text-gray-400 mt-2 text-sm max-w-xs mx-auto">${v.text}</p>
+                `;
+                visualContainer.style.opacity = 1;
+            }, 200);
+        }
+
+        // --- 4. FORAGING LOGIC ---
+        function updateForaging(month) {
+            const data = forageData[month];
+            document.getElementById('forage-title').innerText = data.title;
+            document.getElementById('forage-desc').innerHTML = data.desc; // InnerHTML for bold tags
+            document.getElementById('forage-icon').innerText = data.icon;
+        }
+
+        // --- 5. STRAW LOGIC ---
+        function showStrawDetail(key) {
+            const data = strawData[key];
+            const box = document.getElementById('straw-detail-box');
+            
+            box.classList.remove('hidden');
+            box.classList.add('fade-in');
+            
+            document.getElementById('straw-detail-title').innerText = data.title;
+            document.getElementById('straw-detail-text').innerText = data.text;
+        }
+
+        // --- 6. CHART INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Chart 1: Forest Cover (Doughnut)
+            const ctxForest = document.getElementById('forestChart').getContext('2d');
+            new Chart(ctxForest, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Forests', 'Lakes', 'Urban/Agri'],
+                    datasets: [{
+                        data: [43, 5, 52],
+                        backgroundColor: ['#3F6212', '#60A5FA', '#E5E7EB'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: 'Land Composition' }
+                    }
+                }
+            });
+
+            // Chart 2: Tourist Motivations (Radar)
+            const ctxMotivations = document.getElementById('motivationChart').getContext('2d');
+            new Chart(ctxMotivations, {
+                type: 'radar',
+                data: {
+                    labels: ['Authenticity', 'Nature', 'Creativity', 'Spirituality', 'Comfort', 'Shopping'],
+                    datasets: [{
+                        label: 'Culture Quest Tourist',
+                        data: [90, 85, 80, 75, 40, 30],
+                        backgroundColor: 'rgba(234, 88, 12, 0.2)',
+                        borderColor: '#EA580C',
+                        pointBackgroundColor: '#EA580C'
+                    },
+                    {
+                        label: 'Mass Tourist',
+                        data: [40, 50, 30, 20, 90, 85],
+                        backgroundColor: 'rgba(156, 163, 175, 0.2)',
+                        borderColor: '#9CA3AF',
+                        pointBackgroundColor: '#9CA3AF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            ticks: { display: false } // clean look
+                        }
+                    }
+                }
+            });
+
+            // Chart 3: Challenges
+            const ctxChallenges = document.getElementById('challengeChart').getContext('2d');
+            new Chart(ctxChallenges, {
+                type: 'bar',
+                data: {
+                    labels: ['Language Barriers', 'Cultural Etiquette', 'Logistics', 'Misinterpretation'],
+                    datasets: [{
+                        label: 'Challenge Severity',
+                        data: [45, 40, 30, 35],
+                        backgroundColor: '#1F2937',
+                        borderRadius: 5
+                    },
+                    {
+                        label: 'Our Solution Impact',
+                        data: [90, 85, 80, 88],
+                        backgroundColor: '#3F6212',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Mitigating Challenges via Guides & Education' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
